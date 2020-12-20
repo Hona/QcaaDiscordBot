@@ -16,7 +16,7 @@ services:
     container_name: QcaaPostgres
     environment:
       - POSTGRES_USER=qcaa
-      - POSTGRES_PASSWORD=weHateOurYear12sHahAHAha12$!@^!@^
+      - POSTGRES_PASSWORD=weHateOurYear12sHahAHAha12
       - POSTGRES_DB=qcaa_db
     volumes:
       - ./data:/var/lib/postgresql/data
