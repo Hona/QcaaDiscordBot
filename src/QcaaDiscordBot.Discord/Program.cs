@@ -45,6 +45,7 @@ var hostBuilder = Host.CreateDefaultBuilder(args)
         
         services.AddSingleton<IUserReportService, UserReportService>();
         services.AddSingleton<IUserReportRepository, UserReportRepository>();
+        services.AddSingleton<IUserProfileRepository, UserProfileRepository>();
         
         services.AddHostedService<Bot>();
     });
