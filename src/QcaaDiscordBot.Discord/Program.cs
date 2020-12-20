@@ -7,9 +7,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using QcaaDiscordBot.Core.Models;
+using QcaaDiscordBot.Core.Repositories;
 using QcaaDiscordBot.Core.Services;
 using QcaaDiscordBot.Discord;
 using QcaaDiscordBot.Discord.Helpers;
+using QcaaDiscordBot.Discord.Services;
+using QcaaDiscordBot.Infrastructure.Repositories;
 using Serilog;
 using Serilog.Events;
 
@@ -20,7 +23,7 @@ using var logger = new LoggerConfiguration()
 
 var logFactory = new LoggerFactory().AddSerilog(logger);
 
-var host = Host.CreateDefaultBuilder(args)
+var hostBuilder = Host.CreateDefaultBuilder(args)
     .ConfigureServices((hostContext, services) =>
     {
         services.AddSingleton(new DiscordClient(new DiscordConfiguration
@@ -49,8 +52,13 @@ var host = Host.CreateDefaultBuilder(args)
         });
         
         services.AddSingleton<IUserReportService, UserReportService>();
+        services.AddSingleton<IUserReportRepository, UserReportRepository>();
         
         services.AddHostedService<Bot>();
     });
 
-host.Build().Run();
+var host = hostBuilder.Build();
+
+host.Services.InitializeMicroservices(Assembly.GetEntryAssembly());
+
+host.Run();
