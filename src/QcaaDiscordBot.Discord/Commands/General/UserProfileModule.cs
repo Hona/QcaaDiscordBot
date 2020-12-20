@@ -35,11 +35,11 @@ namespace QcaaDiscordBot.Discord.Commands.General
                     IconUrl = member.AvatarUrl ?? member.DefaultAvatarUrl
                 },
                 Color = DiscordColor.Goldenrod
-            }.AddField("Gender", profile.Gender)
-                .AddField("Preferred Name", profile.PreferredName)
-                .AddField("Pronouns", profile.PreferredPronouns)
-                .AddField("Age", profile.Age.ToString())
-                .AddField("ATAR", profile.Atar.ToString(CultureInfo.CurrentCulture));
+            }.AddField("Gender", profile.Gender, true)
+                .AddField("Preferred Name", profile.PreferredName, true)
+                .AddField("Pronouns", profile.PreferredPronouns, true)
+                .AddField("Age", profile.Age.ToString(), true)
+                .AddField("ATAR", profile.Atar.ToString(CultureInfo.CurrentCulture), true);
 
             await context.RespondAsync(embed: embedBuilder.Build());
         }
@@ -101,7 +101,7 @@ namespace QcaaDiscordBot.Discord.Commands.General
             }
             
             // Age
-            await context.RespondAsync("Enter your prefered age (or 'keep'): ");
+            await context.RespondAsync("Enter your age (or 'keep'): ");
             var ageResponse = await interactivity.WaitForMessageAsync(x => x.Author.Id == context.User.Id);
 
             if (ageResponse.TimedOut)
