@@ -5,6 +5,9 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Enums;
+using DSharpPlus.Interactivity.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using QcaaDiscordBot.Discord.Helpers;
@@ -29,12 +32,18 @@ namespace QcaaDiscordBot.Discord.Services
                 Services = services
             });
 
+            discordClient.UseInteractivity(new InteractivityConfiguration() 
+            { 
+                PollBehaviour = PollBehaviour.KeepEmojis,
+                Timeout = TimeSpan.FromSeconds(60)
+            });
+
             commands.RegisterCommands(Assembly.GetEntryAssembly());
 
-            commands.CommandErrored += _commands_CommandErrored;
+            commands.CommandErrored += commands_CommandErrored;
         }
 
-        private Task _commands_CommandErrored(CommandsNextExtension sender, CommandErrorEventArgs e)
+        private Task commands_CommandErrored(CommandsNextExtension sender, CommandErrorEventArgs e)
         {
             _ = Task.Run(async () =>
             {

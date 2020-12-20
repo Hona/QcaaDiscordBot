@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="DSharpPlus" Version="4.0.0-nightly-00769" />
     <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-nightly-00769" />
+    <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-nightly-00769" />
     <PackageReference Include="Marten" Version="3.13.3" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />

@@ -45,5 +45,15 @@ namespace QcaaDiscordBot.Core.Services
                 tempBanThresholdReached();
             }
         }
+
+        public async Task ClearUserReportsAsync(ulong userId)
+        {
+            var userReports = await _userReportRepository.GetByUserId(userId);
+
+            foreach (var userReport in userReports)
+            {
+                await _userReportRepository.Delete(userReport);
+            }
+        }
     }
 }

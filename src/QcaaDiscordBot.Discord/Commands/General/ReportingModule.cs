@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using DSharpPlus.Interactivity.Extensions;
 using Microsoft.Extensions.Configuration;
 using QcaaDiscordBot.Core.Repositories;
 using QcaaDiscordBot.Core.Services;
@@ -19,11 +21,13 @@ namespace QcaaDiscordBot.Discord.Commands.General
         public IUserReportRepository UserReportRepository { get; set; }
         public IConfiguration Config { get; set; }
         
-        [Command("")]
+        [GroupCommand]
         [Description("Reports a user for any reason, 5 reports and the user will be temp-banned automatically, pending moderator review.")]
         public async Task ReportUserAsync(CommandContext context, DiscordMember reportedMember)
         {
-            await UserReportService.ReportUserAsync(reportedMember.Id, context.User.Id, async () =>
+            DiscordMessage message = null;
+            
+            async void ThresholdReachedAction()
             {
                 // TODO: Give temp ban role
                 var tempBanRole = context.Guild.GetRole(ulong.Parse(Config["UserReports:TempBanRoleId"]));
@@ -33,20 +37,41 @@ namespace QcaaDiscordBot.Discord.Commands.General
                     await ReplyNewEmbedAsync(context, "User already has been temp muted", DiscordColor.Chartreuse);
                     return;
                 }
-                
+
                 await reportedMember.GrantRoleAsync(tempBanRole);
                 await ReplyNewEmbedAsync(context, "User has been temp muted", DiscordColor.Chartreuse);
 
                 var adminChannel = context.Guild.GetChannel(ulong.Parse(Config["UserReports:AdminChannelId"]));
 
                 var adminRole = context.Guild.GetRole(ulong.Parse(Config["UserReports:AdminRoleId"]));
-                await adminChannel.SendMessageAsync(
+
+                var tempMessage = await adminChannel.SendMessageAsync(
                     $"{reportedMember.Mention} has been automatically muted {adminRole.Mention}",
-                    mentions: new List<IMention>
-                    {
-                        new RoleMention(adminRole)
-                    });
-            });
+                    mentions: new List<IMention> {new RoleMention(adminRole)});
+                
+                if (message == null)
+                {
+                    message = tempMessage;
+                }
+            }
+
+            await UserReportService.ReportUserAsync(reportedMember.Id, context.User.Id, ThresholdReachedAction);
+
+            var interactivity = context.Client.GetInteractivity();
+
+            var startTime = DateTime.Now;
+
+            do
+            {
+                var reaction = await interactivity.WaitForReactionAsync(x => x.Message.Id == message.Id && x.Emoji == DiscordEmoji.FromUnicode("⚠"));
+                
+                if (reaction.TimedOut)
+                {
+                    continue;
+                }
+                
+                await UserReportService.ReportUserAsync(reportedMember.Id, reaction.Result.User.Id, ThresholdReachedAction);
+            } while ((DateTime.Now - startTime).TotalSeconds < 60);
 
             await ReplyNewEmbedAsync(context,"User reported successfully", DiscordColor.Goldenrod);
         }
@@ -84,6 +109,29 @@ namespace QcaaDiscordBot.Discord.Commands.General
             };
 
             await context.RespondAsync(embed: embedBuilder.Build());
+        }
+
+        [RequireUserPermissions(Permissions.Administrator)]
+        [Command("clear")]
+        [Description("Clears the reports for a user")]
+        public async Task ClearUserReportsAsync(CommandContext context, DiscordMember member)
+        {
+            await UserReportService.ClearUserReportsAsync(member.Id);
+
+            await ReplyNewEmbedAsync(context, $"Cleared the reports for {member.Mention}", DiscordColor.Goldenrod);
+        }
+
+        [RequireUserPermissions(Permissions.Administrator)]
+        [Command("approve")]
+        [Description("Approves the user reports, banning the user, and clearing the reports")]
+        public async Task ApproveUserReportsAsync(CommandContext context, DiscordMember member)
+        {
+            await ClearUserReportsAsync(context, member);
+
+            // Clears messages for 14 days too
+            await member.BanAsync(14, $"User reports approved by {context.User.Username}");
+            
+            await ReplyNewEmbedAsync(context, "User has been banned successfully", DiscordColor.Goldenrod);
         }
     }
 }
