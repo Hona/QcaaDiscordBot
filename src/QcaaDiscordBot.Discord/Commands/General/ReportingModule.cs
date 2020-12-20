@@ -84,8 +84,8 @@ namespace QcaaDiscordBot.Discord.Commands.General
                 },
                 Color = DiscordColor.Goldenrod
             };
-            
-            var message = await ReplyNewEmbedAsync(context,messageContentStringBuilder.ToString(), DiscordColor.Goldenrod);
+
+            var message = await context.RespondAsync(embed: embedBuilderInitial.Build());
 
             var interactivity = context.Client.GetInteractivity();
 
