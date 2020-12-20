@@ -79,7 +79,7 @@ namespace QcaaDiscordBot.Discord.Commands.General
                 Description = messageContentStringBuilder.ToString(),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
-                    Text = $"React with {autoReportEmoji} to report the user"
+                    Text = $"React with {autoReportEmoji} to report the user | Cancel a report with `qcaa report cancel @user`"
                 },
                 Color = DiscordColor.Goldenrod,
                 Author = new DiscordEmbedBuilder.EmbedAuthor
