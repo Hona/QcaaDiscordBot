@@ -71,18 +71,22 @@ namespace QcaaDiscordBot.Discord.Commands.General
             var numberOfReportsInitial = (await UserReportRepository.GetByUserId(reportedMember.Id)).Count();
 
             var messageContentStringBuilder = new StringBuilder();
-            messageContentStringBuilder.Append("User reported successfully");
-            messageContentStringBuilder.Append(Environment.NewLine);
             messageContentStringBuilder.Append($"{context.User.Mention} added a report, now at {numberOfReportsInitial}/{Config["UserReports:Threshold"]} reports to temp mute");
 
             var embedBuilderInitial = new DiscordEmbedBuilder()
             {
+                Title = "User Report",
                 Description = messageContentStringBuilder.ToString(),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
                     Text = $"React with {autoReportEmoji} to report the user"
                 },
-                Color = DiscordColor.Goldenrod
+                Color = DiscordColor.Goldenrod,
+                Author = new DiscordEmbedBuilder.EmbedAuthor
+                {
+                    Name = reportedMember.DisplayName,
+                    IconUrl = reportedMember.AvatarUrl ?? reportedMember.DefaultAvatarUrl
+                }
             };
 
             var message = await context.RespondAsync(embed: embedBuilderInitial.Build());
