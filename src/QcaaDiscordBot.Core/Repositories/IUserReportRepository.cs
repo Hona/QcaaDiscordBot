@@ -9,6 +9,7 @@ namespace QcaaDiscordBot.Core.Repositories
         Task Add(UserReport userReport);
         Task Update(UserReport userReport);
         Task<IEnumerable<UserReport>> GetByUserId(ulong userId);
+        Task<UserReport> GetByUserAndReporterId(ulong userId, ulong reporterId);
         Task Delete(UserReport userReport);
     }
 }

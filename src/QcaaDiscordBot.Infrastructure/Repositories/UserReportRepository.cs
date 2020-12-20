@@ -43,6 +43,14 @@ namespace QcaaDiscordBot.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<UserReport> GetByUserAndReporterId(ulong userId, ulong reporterId)
+        {
+            using var session = _store.QuerySession();
+
+            return await session.Query<UserReport>()
+                .FirstOrDefaultAsync(x => x.UserId == (long)userId && x.ReportingUserId == (long)reporterId);
+        }
+
         public async Task Delete(UserReport userReport)
         {
             using var session = _store.DirtyTrackedSession();

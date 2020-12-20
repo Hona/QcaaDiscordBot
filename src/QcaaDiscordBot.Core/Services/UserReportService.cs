@@ -20,6 +20,14 @@ namespace QcaaDiscordBot.Core.Services
 
         public async Task ReportUserAsync(ulong userId, ulong reportingUserId, Action tempBanThresholdReached)
         {
+            // Don't let users report the same user multiple times
+            var existingReport = await _userReportRepository.GetByUserAndReporterId(userId, reportingUserId);
+
+            if (existingReport != null)
+            {
+                return;
+            }
+            
             var userReport = new UserReport
             {
                 UserId = (long)userId,
