@@ -7,7 +7,7 @@ namespace QcaaDiscordBot.Core.Services
 {
     public interface IUserReportService
     {
-        Task ReportUserAsync(ulong userId, ulong reportingUserId, Action tempBanThresholdReached);
+        Task ReportUserAsync(ulong userId, ulong reportingUserId, Func<Task> tempBanThresholdReachedAsync);
         Task ClearUserReportsAsync(ulong userId);
     }
 }

@@ -19,7 +19,7 @@ namespace QcaaDiscordBot.Core.Services
             _config = config;
         }
 
-        public async Task ReportUserAsync(ulong userId, ulong reportingUserId, Action tempBanThresholdReached)
+        public async Task ReportUserAsync(ulong userId, ulong reportingUserId, Func<Task> tempBanThresholdReachedAsync)
         {
             // Don't let users report the same user multiple times
             var existingReport = await _userReportRepository.GetByUserAndReporterId(userId, reportingUserId);
@@ -42,7 +42,7 @@ namespace QcaaDiscordBot.Core.Services
 
             if (userReports.Count() >= int.Parse(_config["UserReports:Threshold"]))
             {
-                tempBanThresholdReached();
+                await tempBanThresholdReachedAsync();
             }
         }
 

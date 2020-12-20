@@ -27,7 +27,7 @@ namespace QcaaDiscordBot.Discord.Commands.General
         {
             DiscordMessage message = null;
             
-            async void ThresholdReachedAction()
+            async Task ThresholdReachedAction()
             {
                 // TODO: Give temp ban role
                 var tempBanRole = context.Guild.GetRole(ulong.Parse(Config["UserReports:TempBanRoleId"]));
