@@ -60,10 +60,12 @@ namespace QcaaDiscordBot.Discord.Commands.General
             var interactivity = context.Client.GetInteractivity();
 
             var startTime = DateTime.Now;
+            var autoReportEmoji = DiscordEmoji.FromUnicode("⚠");
+            await message.CreateReactionAsync(autoReportEmoji);
 
             do
             {
-                var reaction = await interactivity.WaitForReactionAsync(x => x.Message.Id == message.Id && x.Emoji == DiscordEmoji.FromUnicode("⚠"));
+                var reaction = await interactivity.WaitForReactionAsync(x => x.Message.Id == message.Id && x.Emoji == autoReportEmoji);
                 
                 if (reaction.TimedOut)
                 {
