@@ -19,7 +19,7 @@ namespace QcaaDiscordBot.Discord.Commands.General
         public IUserReportRepository UserReportRepository { get; set; }
         public IConfiguration Config { get; set; }
         
-        [Command]
+        [Command("")]
         [Description("Reports a user for any reason, 5 reports and the user will be temp-banned automatically, pending moderator review.")]
         public async Task ReportUserAsync(CommandContext context, DiscordMember reportedMember)
         {
