@@ -67,11 +67,23 @@ namespace QcaaDiscordBot.Discord.Commands.General
             await UserReportService.ReportUserAsync(reportedMember.Id, context.User.Id, ThresholdReachedAction);
 
             var autoReportEmoji = DiscordEmoji.FromName(context.Client, ":warning:");
+            
+            var numberOfReportsInitial = (await UserReportRepository.GetByUserId(reportedMember.Id)).Count();
 
             var messageContentStringBuilder = new StringBuilder();
             messageContentStringBuilder.Append("User reported successfully");
             messageContentStringBuilder.Append(Environment.NewLine);
-            messageContentStringBuilder.Append($"React with {autoReportEmoji} to report the user");
+            messageContentStringBuilder.Append($"{context.User.Mention} added a report, now at {numberOfReportsInitial}/{Config["UserReports:Threshold"]} reports to temp mute");
+
+            var embedBuilderInitial = new DiscordEmbedBuilder()
+            {
+                Description = messageContentStringBuilder.ToString(),
+                Footer = new DiscordEmbedBuilder.EmbedFooter
+                {
+                    Text = $"React with {autoReportEmoji} to report the user"
+                },
+                Color = DiscordColor.Goldenrod
+            };
             
             var message = await ReplyNewEmbedAsync(context,messageContentStringBuilder.ToString(), DiscordColor.Goldenrod);
 
@@ -98,7 +110,12 @@ namespace QcaaDiscordBot.Discord.Commands.General
                     messageContentStringBuilder.Append(Environment.NewLine);
                     messageContentStringBuilder.Append($"{reaction.Result.User.Mention} added a report, now at {numberOfReports}/{Config["UserReports:Threshold"]} reports to temp mute");
 
-                    await message.ModifyAsync(messageContentStringBuilder.ToString());
+                    var embedBuilder = new DiscordEmbedBuilder(message.Embeds.First())
+                    {
+                        Description = messageContentStringBuilder.ToString()
+                    };
+
+                    await message.ModifyAsync(embed: embedBuilder.Build());
                 }
                 catch (Exception e)
                 {
