@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,10 +26,25 @@ namespace QcaaDiscordBot.Discord.Commands.General
             {
                 // TODO: Give temp ban role
                 var tempBanRole = context.Guild.GetRole(ulong.Parse(Config["UserReports:TempBanRoleId"]));
+
+                if (reportedMember.Roles.Any(x => x.Id == tempBanRole.Id))
+                {
+                    await ReplyNewEmbedAsync(context, "User already has been temp muted", DiscordColor.Chartreuse);
+                    return;
+                }
+                
                 await reportedMember.GrantRoleAsync(tempBanRole);
                 await ReplyNewEmbedAsync(context, "User has been temp muted", DiscordColor.Chartreuse);
 
                 var adminChannel = context.Guild.GetChannel(ulong.Parse(Config["UserReports:AdminChannelId"]));
+
+                var adminRole = context.Guild.GetRole(ulong.Parse(Config["UserReports:AdminRoleId"]));
+                await adminChannel.SendMessageAsync(
+                    $"{reportedMember.Mention} has been automatically muted {adminRole.Mention}",
+                    mentions: new List<IMention>
+                    {
+                        new RoleMention(adminRole)
+                    });
             });
 
             await ReplyNewEmbedAsync(context,"User reported successfully", DiscordColor.Goldenrod);
