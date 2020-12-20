@@ -25,7 +25,7 @@ namespace QcaaDiscordBot.Core.Services
 
             if (existingReport != null)
             {
-                return;
+                throw new Exception("You cannot report the same user twice");
             }
             
             var userReport = new UserReport

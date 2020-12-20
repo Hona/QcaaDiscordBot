@@ -56,6 +56,13 @@ namespace QcaaDiscordBot.Discord.Services
                     e.Context.Client.Logger.LogError(e.Exception, 
                         $"{e.Context.User.Username} tried executing '{e.Command?.QualifiedName ?? "<unknown command>"}' but it errored: {e.Exception.GetType()}: {e.Exception.Message ?? "<no message>"}",
                         DateTime.Now);
+
+                    await e.Context.RespondAsync(embed: new DiscordEmbedBuilder
+                    {
+                        Color = DiscordColor.Red,
+                        Title = "Something went wrong",
+                        Description = e.Exception.Message
+                    });
                 }
             });
 
