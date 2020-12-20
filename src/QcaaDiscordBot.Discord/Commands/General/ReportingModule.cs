@@ -108,6 +108,21 @@ namespace QcaaDiscordBot.Discord.Commands.General
             } while ((DateTime.Now - startTime).TotalSeconds < 60);
         }
 
+        [Command("cancel")]
+        [Description("Cancels your report for a user")]
+        public async Task CancelUserReportAsync(CommandContext context, DiscordMember member)
+        {
+            var userReport = await UserReportRepository.GetByUserAndReporterId(member.Id, context.User.Id);
+
+            if (userReport == null)
+            {
+                throw new Exception("You cannot cancel a report for a user you have not reported");
+            }
+            
+            await UserReportRepository.Delete(userReport);
+            await ReplyNewEmbedAsync(context, "Cancelled your report for " + member.Mention, DiscordColor.Goldenrod);
+        }
+        
         [Command("list")]
         [Description("Gets a list of the users that reported another user")]
         public async Task GetUserReportsAsync(CommandContext context, DiscordMember member)
