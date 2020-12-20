@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Threading.Tasks;
+using QcaaDiscordBot.Core.Models;
 
 namespace QcaaDiscordBot.Core.Services
 {
