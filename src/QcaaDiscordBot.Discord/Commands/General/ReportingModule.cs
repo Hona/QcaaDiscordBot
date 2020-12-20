@@ -24,7 +24,7 @@ namespace QcaaDiscordBot.Discord.Commands.General
         
         [GroupCommand]
         [Description("Reports a user for any reason, after a certain amount of reports the user will be temp-banned automatically, pending moderator review.")]
-        public async Task ReportUserAsync(CommandContext context, DiscordMember reportedMember)
+        public async Task ReportUserAsync(CommandContext context, DiscordMember reportedMember, string reason = null)
         {
             // Action runs when the number of reports is > than the minimum
             async Task ThresholdReachedAction()
@@ -60,11 +60,11 @@ namespace QcaaDiscordBot.Discord.Commands.General
                 }
                 
                 await adminChannel.SendMessageAsync(
-                    $"{reportedMember.Mention} has been automatically muted {adminRole.Mention}",
+                    $"{reportedMember.Mention} has been automatically muted {adminRole.Mention} for reason: {reason}",
                     mentions: new List<IMention> {new RoleMention(adminRole)});
             }
             
-            await UserReportService.ReportUserAsync(reportedMember.Id, context.User.Id, ThresholdReachedAction);
+            await UserReportService.ReportUserAsync(reportedMember.Id, context.User.Id, reason, ThresholdReachedAction);
 
             var autoReportEmoji = DiscordEmoji.FromName(context.Client, ":warning:");
             
@@ -73,13 +73,13 @@ namespace QcaaDiscordBot.Discord.Commands.General
             var messageContentStringBuilder = new StringBuilder();
             messageContentStringBuilder.Append($"{context.User.Mention} added a report, now at {numberOfReportsInitial}/{Config["UserReports:Threshold"]} reports to temp mute");
 
-            var embedBuilderInitial = new DiscordEmbedBuilder()
+            var embedBuilderInitial = new DiscordEmbedBuilder
             {
                 Title = "User Report",
                 Description = messageContentStringBuilder.ToString(),
                 Footer = new DiscordEmbedBuilder.EmbedFooter
                 {
-                    Text = $"React with {autoReportEmoji} to report the user | Cancel a report with `qcaa report cancel @user`"
+                    Text = $"React with {autoReportEmoji} to report the user | Cancel a report with 'qcaa report cancel @user'"
                 },
                 Color = DiscordColor.Goldenrod,
                 Author = new DiscordEmbedBuilder.EmbedAuthor
@@ -87,7 +87,7 @@ namespace QcaaDiscordBot.Discord.Commands.General
                     Name = reportedMember.DisplayName,
                     IconUrl = reportedMember.AvatarUrl ?? reportedMember.DefaultAvatarUrl
                 }
-            };
+            }.AddField("Reason", reason);
 
             var message = await context.RespondAsync(embed: embedBuilderInitial.Build());
 
@@ -107,7 +107,7 @@ namespace QcaaDiscordBot.Discord.Commands.General
 
                 try
                 {
-                    await UserReportService.ReportUserAsync(reportedMember.Id, reaction.Result.User.Id, ThresholdReachedAction);
+                    await UserReportService.ReportUserAsync(reportedMember.Id, reaction.Result.User.Id, reason, ThresholdReachedAction);
 
                     var numberOfReports = (await UserReportRepository.GetByUserId(reportedMember.Id)).Count();
 
@@ -175,6 +175,13 @@ namespace QcaaDiscordBot.Discord.Commands.General
                 },
                 Description = string.Join(Environment.NewLine, descriptionStringBuilder.ToString())
             };
+
+            var reasons = reports.Where(x => !string.IsNullOrWhiteSpace(x.Reason)).ToList();
+
+            for (var i = 0; i < reasons.Count; i++)
+            {
+                embedBuilder.AddField($"Reason #{i + 1}", reasons[i].Reason);
+            }
 
             await context.RespondAsync(embed: embedBuilder.Build());
         }
