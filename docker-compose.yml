@@ -1,6 +1,6 @@
 version: "3.8"
 services:
-  sharks-api:
+  qcaa-bot:
     build:
       dockerfile: src/QcaaDiscordBot.Discord/Dockerfile
       context: .
