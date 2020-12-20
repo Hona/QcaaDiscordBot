@@ -7,6 +7,7 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build
 WORKDIR /src
 COPY ["src/QcaaDiscordBot.Discord/QcaaDiscordBot.Discord.csproj", "src/QcaaDiscordBot.Discord/"]
 COPY ["src/QcaaDiscordBot.Core/QcaaDiscordBot.Core.csproj", "src/QcaaDiscordBot.Core/"]
+COPY ["nuget.config", "src/QcaaDiscordBot.Discord/"]
 RUN dotnet restore "src/QcaaDiscordBot.Discord/QcaaDiscordBot.Discord.csproj"
 COPY . .
 WORKDIR "/src/src/QcaaDiscordBot.Discord"
