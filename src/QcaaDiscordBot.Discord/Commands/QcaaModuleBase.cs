@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 namespace QcaaDiscordBot.Discord.Commands
 {
     [ModuleLifespan(ModuleLifespan.Transient)]
-    public class QcaaModuleBase
+    public class QcaaModuleBase : BaseCommandModule
     {
         public ILogger Logger { get; set; }
 
