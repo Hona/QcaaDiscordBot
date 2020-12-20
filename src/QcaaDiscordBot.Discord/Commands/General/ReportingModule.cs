@@ -12,13 +12,14 @@ using QcaaDiscordBot.Core.Services;
 
 namespace QcaaDiscordBot.Discord.Commands.General
 {
+    [Group("report")]
     public class ReportingModule : QcaaModuleBase
     {
         public IUserReportService UserReportService { get; set; }
         public IUserReportRepository UserReportRepository { get; set; }
         public IConfiguration Config { get; set; }
         
-        [Command("report")]
+        [Command]
         [Description("Reports a user for any reason, 5 reports and the user will be temp-banned automatically, pending moderator review.")]
         public async Task ReportUserAsync(CommandContext context, DiscordMember reportedMember)
         {
@@ -50,8 +51,8 @@ namespace QcaaDiscordBot.Discord.Commands.General
             await ReplyNewEmbedAsync(context,"User reported successfully", DiscordColor.Goldenrod);
         }
 
-        [Command("report")]
-        [Description("Reports a user for any reason, after a certain number of reports and the user will be temp-banned automatically, pending moderator review.")]
+        [Command("list")]
+        [Description("Gets a list of the users that reported another user")]
         public async Task GetUserReportsAsync(CommandContext context, DiscordMember member)
         {
             var reports = (await UserReportRepository.GetByUserId(member.Id)).ToList();
