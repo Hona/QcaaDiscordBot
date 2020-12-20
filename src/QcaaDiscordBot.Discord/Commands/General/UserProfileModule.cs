@@ -17,8 +17,10 @@ namespace QcaaDiscordBot.Discord.Commands.General
         public IUserProfileRepository UserProfileRepository { get; set; }
         
         [GroupCommand]
-        public async Task GetUserProfileAsync(CommandContext context, DiscordMember member)
+        public async Task GetUserProfileAsync(CommandContext context, DiscordMember member = null)
         {
+            member ??= context.Member;
+            
             var profile = await UserProfileRepository.GetByUserId(member.Id);
 
             if (profile == null)
