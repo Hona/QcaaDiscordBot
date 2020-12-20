@@ -41,6 +41,8 @@ var hostBuilder = Host.CreateDefaultBuilder(args)
             options.Connection(hostContext.Configuration.GetConnectionString("Marten"));
             
             options.AutoCreateSchemaObjects = AutoCreate.All;
+
+            options.Schema.For<UserProfile>().Identity(x => x.UserId);
         });
         
         services.AddSingleton<IUserReportService, UserReportService>();
