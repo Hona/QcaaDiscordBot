@@ -21,7 +21,7 @@ namespace QcaaDiscordBot.Discord.Services
             {
                 StringPrefixes = new[]
                 {
-                    config["CommandPrefix"]
+                    config["Discord:CommandPrefix"]
                 },
                 EnableDms = true,
                 CaseSensitive = false,

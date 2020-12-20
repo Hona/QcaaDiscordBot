@@ -13,7 +13,7 @@ services:
       - ./config/appsettings.json:/app/appsettings.json
   postgres:
     image: postgres
-    container_name: SharksPostgres${ENVIRONMENT}
+    container_name: QcaaPostgres
     environment:
       - POSTGRES_USER=qcaa
       - POSTGRES_PASSWORD=weHateOurYear12sHahAHAha12$!@^!@^

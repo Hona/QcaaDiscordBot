@@ -24,7 +24,7 @@ var host = Host.CreateDefaultBuilder(args)
     {
         services.AddSingleton(new DiscordClient(new DiscordConfiguration
         {
-            Token = hostContext.Configuration["BotToken"],
+            Token = hostContext.Configuration["Discord:Token"],
             TokenType = TokenType.Bot,
             AutoReconnect = true,
             MinimumLogLevel = LogLevel.None,
