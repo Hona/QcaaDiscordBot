@@ -1,0 +1,22 @@
+version: "3.8"
+services:
+  sharks-api:
+    build:
+      dockerfile: src/QcaaDiscordBot.Discord/Dockerfile
+      context: .
+    image: qcaa-discord-bot
+    container_name: QcaaDiscordBot
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    volumes:
+      - ./config/appsettings.json:/app/appsettings.json
+  postgres:
+    image: postgres
+    container_name: SharksPostgres${ENVIRONMENT}
+    environment:
+      - POSTGRES_USER=qcaa
+      - POSTGRES_PASSWORD=weHateOurYear12sHahAHAha12$!@^!@^
+      - POSTGRES_DB=qcaa_db
+    volumes:
+      - ./data:/var/lib/postgresql/data
