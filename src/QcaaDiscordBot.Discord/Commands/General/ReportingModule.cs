@@ -60,7 +60,7 @@ namespace QcaaDiscordBot.Discord.Commands.General
             var interactivity = context.Client.GetInteractivity();
 
             var startTime = DateTime.Now;
-            var autoReportEmoji = DiscordEmoji.FromUnicode("⚠️");
+            var autoReportEmoji = DiscordEmoji.FromName(context.Client, ":warning:");
             await message.CreateReactionAsync(autoReportEmoji);
 
             do
