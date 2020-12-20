@@ -7,7 +7,7 @@ using QcaaDiscordBot.Core.Services;
 
 namespace QcaaDiscordBot.Discord.Commands.General
 {
-    public class ReportingModule
+    public class ReportingModule : QcaaModuleBase
     {
         public IUserReportService UserReportService { get; set; }
         public IConfiguration Config { get; set; }
@@ -21,7 +21,12 @@ namespace QcaaDiscordBot.Discord.Commands.General
                 // TODO: Give temp ban role
                 var tempBanRole = context.Guild.GetRole(ulong.Parse(Config["UserReports:TempBanRoleId"]));
                 await reportedMember.GrantRoleAsync(tempBanRole);
+                await ReplyNewEmbedAsync(context, "User has been temp muted", DiscordColor.Chartreuse);
+
+                var adminChannel = context.Guild.GetChannel(ulong.Parse(Config["UserReports:AdminChannelId"]));
             });
+
+            await ReplyNewEmbedAsync(context,"User reported successfully", DiscordColor.Goldenrod);
         }
     }
 }

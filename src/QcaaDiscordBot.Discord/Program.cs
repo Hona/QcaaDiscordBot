@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using QcaaDiscordBot.Core.Models;
 using QcaaDiscordBot.Core.Services;
 using QcaaDiscordBot.Discord;
 using QcaaDiscordBot.Discord.Helpers;
