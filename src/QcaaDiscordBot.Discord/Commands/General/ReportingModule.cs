@@ -8,6 +8,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity.Extensions;
+using Marten.Linq.SoftDeletes;
 using Microsoft.Extensions.Configuration;
 using QcaaDiscordBot.Core.Repositories;
 using QcaaDiscordBot.Core.Services;
@@ -22,9 +23,10 @@ namespace QcaaDiscordBot.Discord.Commands.General
         public IConfiguration Config { get; set; }
         
         [GroupCommand]
-        [Description("Reports a user for any reason, 5 reports and the user will be temp-banned automatically, pending moderator review.")]
+        [Description("Reports a user for any reason, after a certain amount of reports the user will be temp-banned automatically, pending moderator review.")]
         public async Task ReportUserAsync(CommandContext context, DiscordMember reportedMember)
         {
+            // Action runs when the number of reports is > than the minimum
             async Task ThresholdReachedAction()
             {
                 // TODO: Give temp ban role
@@ -61,20 +63,26 @@ namespace QcaaDiscordBot.Discord.Commands.General
                     $"{reportedMember.Mention} has been automatically muted {adminRole.Mention}",
                     mentions: new List<IMention> {new RoleMention(adminRole)});
             }
-
+            
             await UserReportService.ReportUserAsync(reportedMember.Id, context.User.Id, ThresholdReachedAction);
 
-            var message = await ReplyNewEmbedAsync(context,"User reported successfully", DiscordColor.Goldenrod);
+            var autoReportEmoji = DiscordEmoji.FromName(context.Client, ":warning:");
+
+            var messageContentStringBuilder = new StringBuilder();
+            messageContentStringBuilder.Append("User reported successfully");
+            messageContentStringBuilder.Append(Environment.NewLine);
+            messageContentStringBuilder.Append($"React with {autoReportEmoji} to report the user");
+            
+            var message = await ReplyNewEmbedAsync(context,messageContentStringBuilder.ToString(), DiscordColor.Goldenrod);
 
             var interactivity = context.Client.GetInteractivity();
 
             var startTime = DateTime.Now;
-            var autoReportEmoji = DiscordEmoji.FromName(context.Client, ":warning:");
             await message.CreateReactionAsync(autoReportEmoji);
 
             do
             {
-                var reaction = await interactivity.WaitForReactionAsync(x => x.Message.Id == message.Id && x.Emoji == autoReportEmoji);
+                var reaction = await interactivity.WaitForReactionAsync(x => x.Message.Id == message.Id && x.Emoji == autoReportEmoji && x.User.Id != context.Client.CurrentUser.Id);
                 
                 if (reaction.TimedOut)
                 {
@@ -82,6 +90,13 @@ namespace QcaaDiscordBot.Discord.Commands.General
                 }
                 
                 await UserReportService.ReportUserAsync(reportedMember.Id, reaction.Result.User.Id, ThresholdReachedAction);
+
+                var numberOfReports = (await UserReportRepository.GetByUserId(reportedMember.Id)).Count();
+
+                messageContentStringBuilder.Append(Environment.NewLine);
+                messageContentStringBuilder.Append($"{reaction.Result.User.Mention} added a report, now at {numberOfReports}/{Config["UserReports:Threshold"]} reports to temp mute");
+
+                await message.ModifyAsync(messageContentStringBuilder.ToString());
             } while ((DateTime.Now - startTime).TotalSeconds < 60);
         }
 
