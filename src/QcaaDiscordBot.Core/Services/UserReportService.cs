@@ -22,8 +22,8 @@ namespace QcaaDiscordBot.Core.Services
         {
             var userReport = new UserReport
             {
-                UserId = userId,
-                ReportingUserId = reportingUserId
+                UserId = (long)userId,
+                ReportingUserId = (long)reportingUserId
             };
 
             await _userReportRepository.Add(userReport);

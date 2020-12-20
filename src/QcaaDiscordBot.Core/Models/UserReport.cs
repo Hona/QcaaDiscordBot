@@ -4,8 +4,8 @@ namespace QcaaDiscordBot.Core.Models
 {
     public class UserReport
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
-        public ulong UserId { get; set; }
-        public ulong ReportingUserId { get; set; }
+        public Guid Id { get; set; }
+        public long UserId { get; set; }
+        public long ReportingUserId { get; set; }
     }
 }

@@ -39,7 +39,7 @@ namespace QcaaDiscordBot.Infrastructure.Repositories
             using var session = _store.QuerySession();
 
             return await session.Query<UserReport>()
-                .Where(x => x.UserId == userId)
+                .Where(x => x.UserId == (long)userId)
                 .ToListAsync();
         }
 
