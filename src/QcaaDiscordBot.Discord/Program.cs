@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using DSharpPlus;
 using Marten;
 using Microsoft.Extensions.Configuration;
@@ -11,10 +10,8 @@ using QcaaDiscordBot.Core.Repositories;
 using QcaaDiscordBot.Core.Services;
 using QcaaDiscordBot.Discord;
 using QcaaDiscordBot.Discord.Helpers;
-using QcaaDiscordBot.Discord.Services;
 using QcaaDiscordBot.Infrastructure.Repositories;
 using Serilog;
-using Serilog.Events;
 
 using var logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
@@ -42,13 +39,10 @@ var hostBuilder = Host.CreateDefaultBuilder(args)
         services.AddMarten(options =>
         {
             options.Connection(hostContext.Configuration.GetConnectionString("Marten"));
+            
+            options.AutoCreateSchemaObjects = AutoCreate.All;
 
-            // Use the more permissive schema auto create behavior
-            // while in development
-            if (hostContext.HostingEnvironment.IsDevelopment())
-            {
-                options.AutoCreateSchemaObjects = AutoCreate.All;
-            }
+            options.Schema.For<UserReport>().Identity(x => x.Id);
         });
         
         services.AddSingleton<IUserReportService, UserReportService>();
