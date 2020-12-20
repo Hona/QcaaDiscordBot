@@ -88,15 +88,23 @@ namespace QcaaDiscordBot.Discord.Commands.General
                 {
                     continue;
                 }
-                
-                await UserReportService.ReportUserAsync(reportedMember.Id, reaction.Result.User.Id, ThresholdReachedAction);
 
-                var numberOfReports = (await UserReportRepository.GetByUserId(reportedMember.Id)).Count();
+                try
+                {
+                    await UserReportService.ReportUserAsync(reportedMember.Id, reaction.Result.User.Id, ThresholdReachedAction);
 
-                messageContentStringBuilder.Append(Environment.NewLine);
-                messageContentStringBuilder.Append($"{reaction.Result.User.Mention} added a report, now at {numberOfReports}/{Config["UserReports:Threshold"]} reports to temp mute");
+                    var numberOfReports = (await UserReportRepository.GetByUserId(reportedMember.Id)).Count();
 
-                await message.ModifyAsync(messageContentStringBuilder.ToString());
+                    messageContentStringBuilder.Append(Environment.NewLine);
+                    messageContentStringBuilder.Append($"{reaction.Result.User.Mention} added a report, now at {numberOfReports}/{Config["UserReports:Threshold"]} reports to temp mute");
+
+                    await message.ModifyAsync(messageContentStringBuilder.ToString());
+                }
+                catch (Exception e)
+                {
+                    await ReplyNewEmbedAsync(context, e.Message, DiscordColor.Red);
+                }
+
             } while ((DateTime.Now - startTime).TotalSeconds < 60);
         }
 
