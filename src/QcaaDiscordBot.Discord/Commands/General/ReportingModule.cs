@@ -25,17 +25,19 @@ namespace QcaaDiscordBot.Discord.Commands.General
         [Description("Reports a user for any reason, 5 reports and the user will be temp-banned automatically, pending moderator review.")]
         public async Task ReportUserAsync(CommandContext context, DiscordMember reportedMember)
         {
-            DiscordMessage message = null;
-            
             async Task ThresholdReachedAction()
             {
                 // TODO: Give temp ban role
                 var tempBanRole = context.Guild.GetRole(ulong.Parse(Config["UserReports:TempBanRoleId"]));
 
+                if (tempBanRole == null)
+                {
+                    throw new Exception("Unable to get temp ban role");
+                }
+                
                 if (reportedMember.Roles.Any(x => x.Id == tempBanRole.Id))
                 {
-                    await ReplyNewEmbedAsync(context, "User already has been temp muted", DiscordColor.Chartreuse);
-                    return;
+                    throw new Exception("User already has been temp muted");
                 }
 
                 await reportedMember.GrantRoleAsync(tempBanRole);
@@ -43,19 +45,26 @@ namespace QcaaDiscordBot.Discord.Commands.General
 
                 var adminChannel = context.Guild.GetChannel(ulong.Parse(Config["UserReports:AdminChannelId"]));
 
+                if (adminChannel == null)
+                {
+                    throw new Exception("Unable to get admin channel");
+                }
+                
                 var adminRole = context.Guild.GetRole(ulong.Parse(Config["UserReports:AdminRoleId"]));
 
-                var tempMessage = await adminChannel.SendMessageAsync(
+                if (adminRole == null)
+                {
+                    throw new Exception("Unable to get admin role");
+                }
+                
+                await adminChannel.SendMessageAsync(
                     $"{reportedMember.Mention} has been automatically muted {adminRole.Mention}",
                     mentions: new List<IMention> {new RoleMention(adminRole)});
-                
-                if (message == null)
-                {
-                    message = tempMessage;
-                }
             }
 
             await UserReportService.ReportUserAsync(reportedMember.Id, context.User.Id, ThresholdReachedAction);
+
+            var message = await ReplyNewEmbedAsync(context,"User reported successfully", DiscordColor.Goldenrod);
 
             var interactivity = context.Client.GetInteractivity();
 
@@ -74,8 +83,6 @@ namespace QcaaDiscordBot.Discord.Commands.General
                 
                 await UserReportService.ReportUserAsync(reportedMember.Id, reaction.Result.User.Id, ThresholdReachedAction);
             } while ((DateTime.Now - startTime).TotalSeconds < 60);
-
-            await ReplyNewEmbedAsync(context,"User reported successfully", DiscordColor.Goldenrod);
         }
 
         [Command("list")]
