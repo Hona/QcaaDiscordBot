@@ -9,11 +9,11 @@ namespace QcaaDiscordBot.Discord.Helpers
 {
     public static class InteractivityExtensions
     {
-        public static async Task<string> GetInteractiveInput(this CommandContext context, string question)
+        public static async Task<string> GetInteractiveInput(this CommandContext context, string question, Action<DiscordEmbedBuilder> embedBuilderAction = null)
         {
             var interactivity = context.Client.GetInteractivity();
-            
-            await context.RespondAsync(embed: new DiscordEmbedBuilder
+
+            var embedBuilder = new DiscordEmbedBuilder
             {
                 Author = new DiscordEmbedBuilder.EmbedAuthor
                 {
@@ -26,7 +26,11 @@ namespace QcaaDiscordBot.Discord.Helpers
                 {
                     Text = "Type 'skip' to either keep your current value, or not answer"
                 }
-            });
+            };
+
+            embedBuilderAction?.Invoke(embedBuilder);
+
+            await context.RespondAsync(embed: embedBuilder.Build());
 
             var responseResult = await interactivity.WaitForMessageAsync(x => x.Author.Id == context.User.Id);
 
@@ -40,9 +44,9 @@ namespace QcaaDiscordBot.Discord.Helpers
             return response.Trim().ToLower() == "skip" ? null : response;
         }
 
-        public static async Task<T> GetInteractiveInput<T>(this CommandContext context, string question) 
+        public static async Task<T> GetInteractiveInput<T>(this CommandContext context, string question, Action<DiscordEmbedBuilder> embedBuilderAction = null) 
         {
-            var stringResponse = await context.GetInteractiveInput(question);
+            var stringResponse = await context.GetInteractiveInput(question, embedBuilderAction);
 
             if (stringResponse == null)
             {
