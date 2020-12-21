@@ -60,23 +60,53 @@ namespace QcaaDiscordBot.Discord.Commands.General
             };
 
             // Name
-            var nameResponse = await context.GetInteractiveInput("Enter your preferred name", x => x.AddField("Current Value", profile.PreferredName));
+            var nameResponse = await context.GetInteractiveInput("Enter your preferred name", x =>
+            {
+                if (profile.PreferredName != null)
+                {
+                    x.AddField("Current Value", profile.PreferredName);
+                }
+            });
             profile.PreferredName = nameResponse ?? profile.PreferredName;
 
             // Gender
-            var genderResponse = await context.GetInteractiveInput("Enter your prefered gender", x => x.AddField("Current Value", profile.Gender));
+            var genderResponse = await context.GetInteractiveInput("Enter your prefered gender", x =>
+            {
+                if (profile.Gender != null)
+                {
+                    x.AddField("Current Value", profile.Gender);
+                }
+            });
             profile.Gender = genderResponse ?? profile.Gender;
             
             // Pronouns
-            var pronounResponse = await context.GetInteractiveInput("Enter your prefered pronoun/s", x => x.AddField("Current Value", profile.PreferredPronouns));
+            var pronounResponse = await context.GetInteractiveInput("Enter your prefered pronoun/s", x =>
+            {
+                if (profile.PreferredPronouns != null)
+                {
+                    x.AddField("Current Value", profile.PreferredPronouns);
+                }
+            });
             profile.PreferredPronouns = pronounResponse ?? profile.PreferredPronouns;
             
             // Age
-            var ageResponse = await context.GetInteractiveInput<int>("Enter your age", x => x.AddField("Current Value", profile.Age.ToString()));
+            var ageResponse = await context.GetInteractiveInput<int>("Enter your age", x =>
+            {
+                if (profile.Age != default)
+                {
+                    x.AddField("Current Value", profile.Age.ToString());
+                }
+            });
             profile.Age = ageResponse == default ? profile.Age : ageResponse;
             
             // ATAR
-            var atarResponse = await context.GetInteractiveInput<decimal>("Enter your ATAR", x => x.AddField("Current Value", profile.Atar.ToString(CultureInfo.CurrentCulture)));
+            var atarResponse = await context.GetInteractiveInput<decimal>("Enter your ATAR", x =>
+            {
+                if (profile.Atar != default)
+                {
+                    x.AddField("Current Value", profile.Atar.ToString(CultureInfo.CurrentCulture));
+                }
+            });
             profile.Atar= atarResponse == default ? profile.Atar : atarResponse;
             
             // Infrastructure
