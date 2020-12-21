@@ -8,6 +8,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity.Extensions;
 using QcaaDiscordBot.Core.Models;
 using QcaaDiscordBot.Core.Repositories;
+using QcaaDiscordBot.Discord.Helpers;
 
 namespace QcaaDiscordBot.Discord.Commands.General
 {
@@ -47,7 +48,7 @@ namespace QcaaDiscordBot.Discord.Commands.General
         }
         
         [Command("set")]
-        public async Task GetUserProfileAsync(CommandContext context)
+        public async Task SetUserProfileAsync(CommandContext context)
         {
             var profile = await UserProfileRepository.GetByUserId(context.User.Id);
 
@@ -58,77 +59,25 @@ namespace QcaaDiscordBot.Discord.Commands.General
                 UserId = (long)context.User.Id
             };
 
-            var interactivity = context.Client.GetInteractivity();
-
             // Name
-            await context.RespondAsync("Enter your prefered name (or 'keep'): ");
-            var nameResponse = await interactivity.WaitForMessageAsync(x => x.Author.Id == context.User.Id);
+            var nameResponse = await context.GetInteractiveInput("Enter your preferred name");
+            profile.PreferredName = nameResponse ?? profile.PreferredName;
 
-            if (nameResponse.TimedOut)
-            {
-                return;
-            }
-
-            if (nameResponse.Result.Content.ToLower() != "keep")
-            {
-                profile.PreferredName = nameResponse.Result.Content;
-            }
-            
             // Gender
-            await context.RespondAsync("Enter your prefered gender (or 'keep'): ");
-            var genderResponse = await interactivity.WaitForMessageAsync(x => x.Author.Id == context.User.Id);
-
-            if (genderResponse.TimedOut)
-            {
-                return;
-            }
-
-            if (genderResponse.Result.Content.ToLower() != "keep")
-            {
-                profile.Gender = genderResponse.Result.Content;
-            }
+            var genderResponse = await context.GetInteractiveInput("Enter your prefered gender");
+            profile.Gender = genderResponse ?? profile.Gender;
             
             // Pronouns
-            await context.RespondAsync("Enter your prefered pronouns (or 'keep'): ");
-            var pronounsResponse = await interactivity.WaitForMessageAsync(x => x.Author.Id == context.User.Id);
-
-            if (pronounsResponse.TimedOut)
-            {
-                return;
-            }
-
-            if (pronounsResponse.Result.Content.ToLower() != "keep")
-            {
-                profile.PreferredPronouns = pronounsResponse.Result.Content;
-            }
+            var pronounResponse = await context.GetInteractiveInput("Enter your prefered pronoun/s");
+            profile.PreferredPronouns = pronounResponse ?? profile.PreferredPronouns;
             
             // Age
-            await context.RespondAsync("Enter your age (or 'keep'): ");
-            var ageResponse = await interactivity.WaitForMessageAsync(x => x.Author.Id == context.User.Id);
-
-            if (ageResponse.TimedOut)
-            {
-                return;
-            }
-
-            if (ageResponse.Result.Content.ToLower() != "keep")
-            {
-                profile.Age = int.Parse(ageResponse.Result.Content);
-            }
+            var ageResponse = await context.GetInteractiveInput<int>("Enter your age");
+            profile.Age = ageResponse == default ? profile.Age : ageResponse;
             
-            // Age
-            await context.RespondAsync("Enter your ATAR (or 'keep'): ");
-            var atarResponse = await interactivity.WaitForMessageAsync(x => x.Author.Id == context.User.Id);
-
-            if (atarResponse.TimedOut)
-            {
-                return;
-            }
-
-            if (atarResponse.Result.Content.ToLower() != "keep")
-            {
-                profile.Atar = decimal.Parse(atarResponse.Result.Content);
-            }
+            // ATAR
+            var atarResponse = await context.GetInteractiveInput<decimal>("Enter your ATAR");
+            profile.Atar= atarResponse == default ? profile.Atar : atarResponse;
             
             // Infrastructure
             if (profileExists)
