@@ -9,7 +9,7 @@ namespace QcaaDiscordBot.Discord.Helpers
 {
     public static class InteractivityExtensions
     {
-        public static async Task<string> GetInteractiveInput(this CommandContext context, string question, Action<DiscordEmbedBuilder> embedBuilderAction = null)
+        public static async Task<string> GetInteractiveInput(this CommandContext context, string question, Action<DiscordEmbedBuilder> embedBuilderAction = null, Func<bool> canExecuteBuilder = null)
         {
             var interactivity = context.Client.GetInteractivity();
 
@@ -28,7 +28,10 @@ namespace QcaaDiscordBot.Discord.Helpers
                 }
             };
 
-            embedBuilderAction?.Invoke(embedBuilder);
+            if (canExecuteBuilder?.Invoke() ?? true)
+            {
+                embedBuilderAction?.Invoke(embedBuilder);
+            }
 
             await context.RespondAsync(embed: embedBuilder.Build());
 
@@ -44,9 +47,9 @@ namespace QcaaDiscordBot.Discord.Helpers
             return response.Trim().ToLower() == "skip" ? null : response;
         }
 
-        public static async Task<T> GetInteractiveInput<T>(this CommandContext context, string question, Action<DiscordEmbedBuilder> embedBuilderAction = null) 
+        public static async Task<T> GetInteractiveInput<T>(this CommandContext context, string question, Action<DiscordEmbedBuilder> embedBuilderAction = null,  Func<bool> canExecuteBuilder = null) 
         {
-            var stringResponse = await context.GetInteractiveInput(question, embedBuilderAction);
+            var stringResponse = await context.GetInteractiveInput(question, embedBuilderAction, canExecuteBuilder);
 
             if (stringResponse == null)
             {
