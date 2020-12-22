@@ -87,7 +87,12 @@ namespace QcaaDiscordBot.Discord.Commands.General
                     Name = reportedMember.DisplayName,
                     IconUrl = reportedMember.AvatarUrl ?? reportedMember.DefaultAvatarUrl
                 }
-            }.AddField("Reason", reason);
+            };
+
+            if (!string.IsNullOrWhiteSpace(reason))
+            {
+                embedBuilderInitial.AddField("Reason", reason);
+            }
 
             var message = await context.RespondAsync(embed: embedBuilderInitial.Build());
 
