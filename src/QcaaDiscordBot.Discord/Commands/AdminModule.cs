@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -49,6 +50,16 @@ namespace QcaaDiscordBot.Discord.Commands
             await NewMemberService.AddUnhandedReactionRolesAsync();
 
             await ReplyNewEmbedAsync(context, "Done", DiscordColor.Blue);
+        }
+
+        [Command("reset")]
+        [Description("Resets all users to be unverified")]
+        public async Task ResetAsync(CommandContext context, DiscordRole role)
+        {
+            foreach (var member in context.Guild.Members.Select(x => x.Value))
+            {
+                await member.GrantRoleAsync(role);
+            }
         }
     }
 }
