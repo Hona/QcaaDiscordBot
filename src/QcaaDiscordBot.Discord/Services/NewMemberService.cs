@@ -9,7 +9,6 @@ using DSharpPlus.EventArgs;
 using Microsoft.Extensions.Configuration;
 using QcaaDiscordBot.Discord.Helpers;
 using QcaaDiscordBot.Discord.Models;
-using Microsoft.Extensions.Logging;
 
 namespace QcaaDiscordBot.Discord.Services
 {
@@ -21,16 +20,14 @@ namespace QcaaDiscordBot.Discord.Services
         private readonly SemaphoreSlim _semaphoreLock = new(1, 1);
         private List<ulong> _faqLockInformed = new();
         private DiscordMessage _lastMessage;
-        private ILogger _logger;
-        
+
         private DiscordChannel _textChannel;
         private DiscordEmoji _newMembersEmoji;
         private DiscordRole _newMembersRole;
         
-        public NewMemberService(DiscordClient discordClient, IConfiguration config, ILogger logger)
+        public NewMemberService(DiscordClient discordClient, IConfiguration config)
         {
             _config = config;
-            _logger = logger;
 
             _discordClient = discordClient;
             
@@ -134,10 +131,8 @@ namespace QcaaDiscordBot.Discord.Services
         {
             _ = Task.Run(async () =>
             {
-                _logger.LogInformation("Entering lock");
                 await _semaphoreLock.WaitAsync();
                 _semaphoreLock.Release();
-                _logger.LogInformation("Entered lock");
 
                 if (e.Channel.Id != _textChannel.Id || e.Emoji.Id != _newMembersEmoji.Id ||
                     !(e.User is DiscordMember member))
