@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
@@ -7,9 +8,11 @@ using QcaaDiscordBot.Discord.Services;
 namespace QcaaDiscordBot.Discord.Commands
 {
     [Group("newmembers")]
+    [RequireUserPermissions(Permissions.Administrator)]
     public class AdminModule : QcaaModuleBase
     {
         public NewMemberService NewMemberService { get; set; }
+        
         [Command("reload")]
         [Description("Reloads the newmembers service, use when the messages change")]
         public async Task ReloadFaqAsync(CommandContext context)

@@ -17,8 +17,8 @@ namespace QcaaDiscordBot.Discord.Services
     {
         private readonly IConfiguration _config;
         private readonly DiscordClient _discordClient;
-        private readonly SemaphoreSlim _semaphoreLock = new SemaphoreSlim(1, 1);
-        private List<ulong> _faqLockInformed = new List<ulong>();
+        private readonly SemaphoreSlim _semaphoreLock = new(1, 1);
+        private List<ulong> _faqLockInformed = new();
         private DiscordMessage _lastMessage;
         
         private DiscordChannel _textChannel;
@@ -134,7 +134,7 @@ namespace QcaaDiscordBot.Discord.Services
                 await _semaphoreLock.WaitAsync();
                 _semaphoreLock.Release();
 
-                if (e.Channel.Id != _textChannel.Id || e.Emoji != _newMembersEmoji ||
+                if (e.Channel.Id != _textChannel.Id || e.Emoji.Id != _newMembersEmoji.Id ||
                     !(e.User is DiscordMember member))
                 {
                     return;
