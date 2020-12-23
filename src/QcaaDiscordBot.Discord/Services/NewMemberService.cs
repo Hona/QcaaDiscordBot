@@ -118,7 +118,7 @@ namespace QcaaDiscordBot.Discord.Services
             _ = Task.Run(async () =>
             {
                 _newMembersEmoji = DiscordEmoji.FromName(_discordClient, _config["NewMembers:Emoji"]);
-                _newMembersRole = _discordClient.FindRole(ulong.Parse(_config["NewMembers.RoleId"]));
+                _newMembersRole = _discordClient.FindRole(ulong.Parse(_config["NewMembers:RoleId"]));
                 
                 await HookToLastMessageAsync();
                 await AddUnhandedReactionRolesAsync();
