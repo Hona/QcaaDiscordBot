@@ -42,5 +42,13 @@ namespace QcaaDiscordBot.Discord.Helpers
             => discordClient.Guilds
                 .SelectMany(x => x.Value.Roles.Values)
                 .FirstOrDefault(x => x != null && x.Id == id);
+
+        public static DiscordEmbedBuilder AddNullableField(this DiscordEmbedBuilder builder, string name, string value,
+            bool inline = false)
+        {
+            return value == null
+                ? builder
+                : builder.AddField(name, value, inline);
+        }
     }
 }

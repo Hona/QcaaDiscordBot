@@ -38,11 +38,11 @@ namespace QcaaDiscordBot.Discord.Commands.General
                     IconUrl = member.AvatarUrl ?? member.DefaultAvatarUrl
                 },
                 Color = DiscordColor.Goldenrod
-            }.AddField("Gender", profile.Gender, true)
-                .AddField("Preferred Name", profile.PreferredName, true)
-                .AddField("Pronouns", profile.PreferredPronouns, true)
-                .AddField("Age", profile.Age.ToString(), true)
-                .AddField("ATAR", profile.Atar.ToString(CultureInfo.CurrentCulture), true);
+            }.AddNullableField("Gender", profile.Gender, true)
+                .AddNullableField("Preferred Name", profile.PreferredName, true)
+                .AddNullableField("Pronouns", profile.PreferredPronouns, true)
+                .AddNullableField("Age", profile.Age.ToString(), true)
+                .AddNullableField("ATAR", profile.Atar.ToString(CultureInfo.CurrentCulture), true);
 
             await context.RespondAsync(embed: embedBuilder.Build());
         }
