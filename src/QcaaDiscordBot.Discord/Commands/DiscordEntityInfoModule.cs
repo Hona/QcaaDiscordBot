@@ -11,6 +11,7 @@ using QcaaDiscordBot.Discord.Helpers;
 namespace QcaaDiscordBot.Discord.Commands
 {
     [Group("discord")]
+    [RequireUserPermissions(Permissions.Administrator)]
     public class ModeratorDiscordEntityModule : QcaaModuleBase
     {
         [Command("info")]
