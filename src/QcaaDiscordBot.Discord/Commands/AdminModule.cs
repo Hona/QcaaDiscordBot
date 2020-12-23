@@ -62,12 +62,12 @@ namespace QcaaDiscordBot.Discord.Commands
             {
                 try
                 {
-                    Logger.LogInformation($"Giving the role to {member}");
+                    Console.WriteLine($"Giving the role to {member}");
                     await member.GrantRoleAsync(role);
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError(e, "Error giving role");
+                    Console.WriteLine("Error giving role to " + member);
                     throw;
                 }
 
