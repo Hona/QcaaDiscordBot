@@ -4,6 +4,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using Microsoft.Extensions.Logging;
 using QcaaDiscordBot.Discord.Services;
 
 namespace QcaaDiscordBot.Discord.Commands
@@ -58,6 +59,7 @@ namespace QcaaDiscordBot.Discord.Commands
         {
             foreach (var member in context.Guild.Members.Select(x => x.Value))
             {
+                Logger.LogInformation($"Giving the role to {member}");
                 await member.GrantRoleAsync(role);
             }
         }
