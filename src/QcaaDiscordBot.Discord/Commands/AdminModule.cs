@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -59,8 +60,17 @@ namespace QcaaDiscordBot.Discord.Commands
         {
             foreach (var member in context.Guild.Members.Select(x => x.Value))
             {
-                Logger.LogInformation($"Giving the role to {member}");
-                await member.GrantRoleAsync(role);
+                try
+                {
+                    Logger.LogInformation($"Giving the role to {member}");
+                    await member.GrantRoleAsync(role);
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError(e, "Error giving role");
+                    throw;
+                }
+
             }
         }
     }
