@@ -58,10 +58,15 @@ namespace QcaaDiscordBot.Discord.Commands
         [Description("Resets all users to be unverified")]
         public async Task ResetAsync(CommandContext context, DiscordRole role)
         {
-            foreach (var member in context.Guild.Members.Select(x => x.Value))
+            var members = await context.Guild.GetAllMembersAsync();
+            foreach (var member in members)
             {
                 try
                 {
+                    if (member.Roles.Any(x => x.Id == role.Id))
+                    {
+                        continue;
+                    }
                     Console.WriteLine($"Giving the role to {member}");
                     await member.GrantRoleAsync(role);
                 }
