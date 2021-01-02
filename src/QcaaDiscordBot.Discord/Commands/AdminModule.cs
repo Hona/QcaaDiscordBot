@@ -78,5 +78,24 @@ namespace QcaaDiscordBot.Discord.Commands
 
             }
         }
+
+        [Command("setupmuterole")]
+        [Description("Denies send message + voice connect permissions to all channels")]
+        public async Task SetupMuteRoleAsync(CommandContext context, DiscordRole role)
+        {
+            var channels = context.Guild.Channels;
+
+            foreach (var channel in channels)
+            {
+                try
+                {
+                    await channel.Value.AddOverwriteAsync(role, deny: Permissions.Speak | Permissions.Stream | Permissions.AddReactions | Permissions.ChangeNickname | Permissions.SendMessages | Permissions.UseVoice);
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError(e, "Error setting permission override for channel", channel);
+                }
+            }
+        }
     }
 }
